@@ -1,0 +1,61 @@
+version: "3"
+services: 
+  zabbix-server:
+    image: "zabbix/zabbix-server-mysql:centos-4.0.4"
+    container_name: "zabbix-server"
+    restart: "always"
+    environment: 
+      - "DB_SERVER_HOST=zabbix-db"
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD=123456"
+      #- "DB_SERVER_PORT="
+      #- "MYSQL_DATABASE="
+    volumes: 
+      - "/zabbix/server:/var/lib/zabbix/"
+      - "/zabbix/server/scripts:/usr/lib/zabbix/"
+    depends_on: 
+      - "zabbix-db"
+    ports: 
+      - "10051:10051"
+#    extra_hosts:
+#      - "mysql.bboysoul.com:10.10.10.200"
+
+
+  zabbix-web:
+    image: "zabbix/zabbix-web-nginx-mysql:centos-4.0.4"
+    container_name: "zabbix-web"
+    restart: "always"
+    environment: 
+      - "DB_SERVER_HOST=zabbix-db"
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD=123456"
+      - "ZBX_SERVER_HOST=192.168.37.9"
+      - "PHP_TZ=Asia/Shanghai	"
+      #- "ZBX_SERVER_PORT="
+      #- "DB_SERVER_PORT="
+      #- "MYSQL_DATABASE="
+      #- "ZBX_SERVER_NAME="
+    depends_on: 
+      - "zabbix-server"
+      - "zabbix-db"
+    ports: 
+      - "70:80"
+    #extra_hosts:
+    #  - "mysql.bboysoul.com:10.10.10.200"
+    
+  zabbix-db:
+    image: "mariadb:10.2.22"
+    container_name: "zabbix-db"
+    restart: "always"
+    environment: 
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=zabbix"
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD=123456"
+      #- "MYSQL_ALLOW_EMPTY_PASSWORD="
+      #- "MYSQL_RANDOM_ROOT_PASSWORD="
+    ports: 
+      - "3306:3306"
+    volumes: 
+      - "/zabbix/db:/var/lib/mysql/"
+
