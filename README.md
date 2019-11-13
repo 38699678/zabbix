@@ -24,3 +24,7 @@ docker inspect zabbix-server | grep '"IPAddress":'  #找到zabbix-server的容�
 Server=192.168.37.9,192.168.160.3  #宿主机IP和容器IP都写上
  
 systemctl start zabbix-agent
+
+zabbix默认账户：Admin
+
+zabbix默认密码：zabbix
