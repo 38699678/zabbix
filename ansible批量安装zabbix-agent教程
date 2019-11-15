@@ -1,5 +1,7 @@
 原文链接：http://islocal.cc/arlo/7c94dafb/
-
+安装ansible
+yum install epel-release
+yum install ansible
 ansible 目录结构
 [root@sl_confluence ansible]# pwd
 /etc/ansible
