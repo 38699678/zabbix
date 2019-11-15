@@ -1,0 +1,77 @@
+原文链接：http://islocal.cc/arlo/7c94dafb/
+
+ansible 目录结构
+[root@sl_confluence ansible]# pwd
+/etc/ansible
+[root@sl_confluence ansible]# tree
+.
+├── ansible.cfg
+├── hosts
+├── roles
+│   └── zabbix_agent
+│       ├── files
+│       │   └── zabbix-agent-4.4.1-1.el7.x86_64.rpm
+│       ├── tasks
+│       │   └── main.yaml
+│       └── templates
+│           └── zabbix_agentd.conf.j2
+└── zabbix_agent.yml
+
+5 directories, 6 files
+
+查看 hosts文件
+[root@sl_confluence ansible]# cat hosts
+[zabbix_agent]
+172.16.8.16[1:8]
+172.16.8.19[1:5]
+172.16.8.21[1:7]
+[zabbix_agent:vars]
+ansible_ssh_port=22
+ansible_ssh_user=root
+ansible_ssh_pass=123456
+
+
+[root@sl_confluence ansible]# cat zabbix_agent.yml
+- hosts: zabbix_agent
+  user: root
+  vars:
+     zabbix_serverip: 172.16.8.196 # zabbix 服务器IP
+     zabbix_activeip: 172.16.8.196 # zabbix 服务器IP
+     agent_hostname: '{{ ansible_hostname }}' # 客户端hostname
+     agent_ip: '{{ ansible_ens192.ipv4.address }}' # 客户端IP 根据实际情况修改自己的网卡名字eth0 改成自己服务器
+  roles:
+    - zabbix_agent
+
+
+[root@sl_confluence tasks]#  pwd
+/etc/ansible/roles/zabbix_agent/tasks
+[root@sl_confluence tasks]# cat main.yml
+- name: copy zabbix_agentd 
+  copy: src=/etc/ansible/roles/zabbix_agent/files/zabbix-agent-4.4.1-1.el7.x86_64.rpm  dest=/usr/local/src/zabbix-agent-4.4.1-1.el7.x86_64.rpm
+- name: install zabbix-agend
+  shell: rpm -ivh /usr/local/src/zabbix-agent-4.4.1-1.el7.x86_64.rpm # 安装zabbix agentd
+- name: up zabbix-agent file client  # 上传配置文件
+  template: src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf
+- name: enabled service zabbix-agent # 打开zabbix-agent 开机启动
+  service: name=zabbix-agent enabled=yes
+- name: start  service zabbix-agent # 启动zabbix-agent
+  service: name=zabbix-agent  state=started
+
+
+[root@sl_confluence tasks]# pwd
+/etc/ansible/roles/zabbix_agent/templates
+定义zabbix_agent.conf模板文件
+[root@sl_confluence templates]# cat zabbix_agentd.conf.j2 
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+EnableRemoteCommands=1
+Server={{zabbix_serverip}}
+ListenPort=10050
+ServerActive={{zabbix_activeip}}
+Hostname={{ansible_hostname}}
+AllowRoot=1
+Include=/etc/zabbix/zabbix_agentd.d/*.conf
+
+
+开始安装
+ansible-playbook zabbix_agent.yml
