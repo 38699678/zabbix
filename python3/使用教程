@@ -1,0 +1,16 @@
+安装agent以后批量添加zabbix被监控服务器
+
+修改此文件的zabbix-sever地址
+执行命令
+# python3 zabbix-auth.py
+执行后会返回一个字符串，是用来登录的auth信息
+
+
+
+修改此文件的zabbix-sever地址
+修改此文件的auth值
+"auth": "ac583f4f430289d5b5c1fffcc8bc5775", 
+"auth": "修改成auth执行返回的字符串", 
+
+修改完成后执行命令即可批量添加主机到zabbixweb页面
+# python3 zabbix_create_host.py
