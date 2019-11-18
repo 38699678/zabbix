@@ -1,0 +1,12 @@
+## 程序名称 端口(端口也是可以使用名称代替的)
+mysql 3306
+mongod 27017
+zookeeper 2181
+rocketmq 9876
+supervisord 9001
+rocketmq-console-ng 9877
+xxl-job-executor-sample-springboot 999999
+#999999端口不存在，为的是只监控程序
+dubbo-admin-server 8099
+xxl-job-admin 8888
+bc-admin-server 999999

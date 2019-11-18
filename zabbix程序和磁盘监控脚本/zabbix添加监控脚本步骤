@@ -1,0 +1,13 @@
+将zabbix_agentd.d  zabbix_scripts 这两个目录拷贝到被监控服务器
+
+
+ansible zabbix_agent -m copy -a "src=/etc/zabbix/zabbix_agentd.d/  dest=/etc/zabbix/zabbix_agentd.d/"
+ansible zabbix_agent -m copy -a "src=/etc/zabbix/zabbix_scripts/  dest=/etc/zabbix/zabbix_scripts/ mode=755"
+ansible zabbix_agent -m service -a "name=zabbix-agent state=restarted"
+
+
+完成后在zabbixweb页面添加监控模板
+
+zbx_export_templates.xml
+process_discovery.xml
+将这两个模板导入，根据需求启用
