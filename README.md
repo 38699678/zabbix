@@ -1,4 +1,4 @@
-# zabbix
+# zabbixdocker-compose安装（只是能实现，有bug，我后面用的还是宿主机yum安装）
 docker-compose运行zabbix-server
 
 # 可以先将镜像拉取下来
