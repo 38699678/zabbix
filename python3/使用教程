@@ -1,16 +1,32 @@
 安装agent以后批量添加zabbix被监控服务器
 
-修改此文件的zabbix-sever地址
+<host> 此文件是需要添加的[主机IP地址] [可见名称]
+
+
+<zabbix-auth.py>修改此文件的zabbix-sever地址、账户名、密码
 执行命令
 # python3 zabbix-auth.py
 执行后会返回一个字符串，是用来登录的auth信息
 
 
+需要在 <配置> <主机群组>创建一个群组
+而这个群组，默认第一个创建的组groupid是15且唯一，即便你创建群组后删除重新创建相同组名，id也不会是相同的，默认自加一
+"groups": [
+                {
+                    "groupid": "15"
+                }
+            ],
+所以第一次使用的时候只需要创建一个<主机群组>,命名是什么都行
 
-修改此文件的zabbix-sever地址
-修改此文件的auth值
+
+<zabbix_create_host.py> 修改此文件的zabbix-sever地址、账户名、密码
+<zabbix_create_host.py> 修改此文件的auth值
+
 "auth": "ac583f4f430289d5b5c1fffcc8bc5775", 
 "auth": "修改成auth执行返回的字符串", 
 
-修改完成后执行命令即可批量添加主机到zabbixweb页面
+
+批量添加主机到zabbix web页面
 # python3 zabbix_create_host.py
+
+
