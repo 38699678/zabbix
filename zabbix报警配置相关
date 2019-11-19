@@ -1,0 +1,72 @@
+<管理><报警媒介类型>
+名称：自定义
+脚本名称：zbxtg.py
+脚本参数：
+{ALERT.SENDTO}
+{ALERT.SUBJECT}
+{ALERT.MESSAGE}
+--group
+<选项>，尝试次数1，尝试间隔30S
+
+
+<用户><报警媒介>
+收件人：[telegram组名]
+
+
+<配置><动作>
+新的触发器条件：触发器示警度 大于等于 警告
+<操作>
+默认操作步骤持续时间：1h
+默认标题：{{fire}}{{fire}}{{fire}}:告警节点:{TRIGGER.NAME}
+消息内容：
+zbxtg;graphs
+zbxtg;graphs_period=10800
+zbxtg;itemid:{ITEM.ID1}
+zbxtg;title:{HOST.HOST} - {TRIGGER.NAME}
+问题详情:  {ITEM.NAME}:{ITEM.VALUE}
+告警主机:  {HOST.NAME}
+告警时间:  {EVENT.DATE} {EVENT.TIME}
+告警等级:  {TRIGGER.SEVERITY}
+告警信息:  {TRIGGER.NAME}
+告警项目:  {TRIGGER.KEY1}
+当前状态:  {TRIGGER.STATUS}.{ITEM.VALUE}
+事件ID:  {EVENT.ID}
+
+暂停操作以停止问题 勾选
+
+步骤1 1
+
+步骤持续时间 0
+
+用户群组	动作
+Zabbix administrators	
+发送到用户
+用户	动作
+Admin (Zabbix Administrator)	
+
+
+
+
+<恢复操作>
+默认标题：{{OK}}{{OK}}{{OK}}:恢复节点:{TRIGGER.NAME}
+消息内容：
+zbxtg;graphs
+zbxtg;graphs_period=10800
+zbxtg;itemid:{ITEM.ID1}
+zbxtg;title:{HOST.HOST} - {TRIGGER.NAME}
+问题详情:  {ITEM.NAME}:{ITEM.VALUE}
+恢复主机:  {HOST.NAME}
+恢复时间:  {EVENT.DATE} {EVENT.TIME}
+事件等级:  {TRIGGER.SEVERITY}
+恢复项目:  {TRIGGER.KEY1}
+当前状态:  {TRIGGER.STATUS}.{ITEM.VALUE}
+事件ID:  {EVENT.ID}
+步骤1 1
+
+步骤持续时间 0
+
+用户群组	动作
+Zabbix administrators	
+发送到用户
+用户	动作
+Admin (Zabbix Administrator)	
