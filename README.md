@@ -28,3 +28,6 @@ systemctl start zabbix-agent
 zabbix默认账户：Admin
 
 zabbix默认密码：zabbix
+
+
+配置报警教程 https://blog.51cto.com/yangshufan/2392609
