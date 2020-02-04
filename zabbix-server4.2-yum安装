@@ -13,6 +13,7 @@ yum install -y mysql-community-server
 /etc/my.cnf
 按需添加
 ##################################
+[mysqld]
 server_id = 1
 datadir=/var/lib/mysql
 socket=/var/lib/mysql/mysql.sock
