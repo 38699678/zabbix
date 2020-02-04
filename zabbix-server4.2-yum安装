@@ -1,0 +1,105 @@
+配置yum源
+rpm -Uvh https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm
+开始安装
+yum -y install  zabbix-server-mysql  zabbix-web-mysql  zabbix-agent  zabbix-proxy-mysql
+
+
+yum安装mysql-5.7
+wget https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm
+yum localinstall  -y mysql57-community-release-el7-11.noarch.rpm
+yum install -y mysql-community-server
+
+
+/etc/my.cnf
+按需添加
+##################################
+server_id = 1
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+default-storage-engine=INNODB
+#Optimize omit
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+log-bin     = binlog
+log_bin_trust_function_creators=1
+binlog_format = ROW
+expire_logs_days = 30
+sync_binlog = 0
+slow-query-log=1
+slow-query-log-file=/var/log/mysql/slow-queries.log
+long_query_time = 3
+log-queries-not-using-indexes
+explicit_defaults_for_timestamp = 1
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+##################################
+
+启动MySQL
+systemctl start mysqld
+systemctl enable mysqld
+
+查看生成mysql root用户临时密码
+grep 'temporary password' /var/log/mysqld.log
+
+修改root用户的密码
+mysql -uroot -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
+
+
+创建zabbix数据库并授权zabbix访问
+create database zabbix;
+grant all privileges on zabbix.* to zabbix@'%' identified by 'Test123@';
+grant all privileges on zabbix.* to zabbix@'localhost' identified by 'Test123@';
+flush privileges;
+
+
+导入zabbix数据库
+zcat /usr/share/doc/zabbix-server-mysql-4.2.8/create.sql.gz |mysql -uroot -P3306 -pTest123@ --database zabbix
+
+
+修改php时区
+sed -i  's^; http://php.net/date.timezone^date.timezone = Asia/Shanghai^g'  /etc/php.ini
+
+修改zabbix-server配置文件，输入数据库信息
+grep -v "#" /etc/zabbix/zabbix_server.conf  | grep -v "^$"
+###########################################################
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
+PidFile=/var/run/zabbix/zabbix_server.pid
+SocketDir=/var/run/zabbix
+DBHost=127.0.0.1
+DBName=zabbix
+DBUser=zabbix
+DBPassword=Test123@
+DBSocket=/var/lib/mysql/mysql.sock
+DBPort=3306
+StartPollers=100
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+CacheSize=1G
+Timeout=4
+AlertScriptsPath=/usr/lib/zabbix/alertscripts
+ExternalScripts=/usr/lib/zabbix/externalscripts
+LogSlowQueries=3000
+StatsAllowedIP=127.0.0.1
+###########################################################
+
+
+启动zabbix-server，zabbix-agent，httpd
+systemctl start zabbix-agent && systemctl enable zabbix-agent
+systemctl start zabbix-server && systemctl enable zabbix-server
+systemctl start httpd && systemctl enable httpd
+
+
+
+启动访问
+http://{IP}/zabbix
+
+默认密码
+Admin
+zabbix
+
+
